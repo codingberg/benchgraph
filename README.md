@@ -60,6 +60,8 @@ benchgraph -help
 Usage of benchgraph:
   -apiurl string
     	url to server api (default "http://benchgraph.codingberg.com")
+  -local
+      generates the response locally
   -oba value
     	comma-separated list of benchmark arguments (default [])
   -obn value
@@ -84,6 +86,17 @@ go test -bench . > out
 cat out|benchgraph -title="Graph1: Benchmark F(x) in ns/op" -obn="F2,F3,F4" -oba="F,FF,FFF,FFFF,FFFFF,FFFFFF,FFFFFFF,FFFFFFFF"
 cat out|benchgraph -title="Graph2: Benchmark F(x) in ns/op" -obn="F2,F3,F4" -oba="0F,F0,F00,F000,F0000,F00000,F000000,F0000000"
 ```
+
+To have all in local, you can also use the **-local** option :
+
+```bash
+go test -bench . > out
+
+cat out|benchgraph -title="Graph1: Benchmark F(x) in ns/op" -obn="F2,F3,F4" -oba="F,FF,FFF,FFFF,FFFFF,FFFFFF,FFFFFFF,FFFFFFFF" -local
+cat out|benchgraph -title="Graph2: Benchmark F(x) in ns/op" -obn="F2,F3,F4" -oba="0F,F0,F00,F000,F0000,F00000,F000000,F0000000" -local
+```
+
+It will generates on your temp folder, a local html file.
 
 ## Online Demo
 
