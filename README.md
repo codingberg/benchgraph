@@ -8,7 +8,7 @@ In Golang we can analyze algorithm efficiency by writing benchmark functions and
 
 ```bash
 git clone https://github.com/CodingBerg/benchgraph.git
-cd ./benchmark
+cd ./benchgraph
 go get ./
 go install
 ```
