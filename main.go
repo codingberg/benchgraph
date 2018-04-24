@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"text/template"
 
 	"github.com/fatih/color"
 	"golang.org/x/tools/benchmark/parse"
@@ -35,6 +36,41 @@ func uploadData(apiUrl, data, title string) (string, error) {
 	return string(body), nil
 }
 
+func writeLocallyData(data, title string) (string, error) {
+	t := template.New("Benchgraph Template")
+	t, err := t.Parse(templateHTML)
+	if err != nil {
+		return "", err
+	}
+
+	tmpfile, err := ioutil.TempFile("", "benchgraph")
+	if err != nil {
+		return "", err
+	}
+
+	model := struct {
+		Title, Data string
+	}{
+		title,
+		data,
+	}
+
+	err = t.Execute(tmpfile, model)
+	if err != nil {
+		return "", err
+	}
+
+	tmpfile.Close()
+	newName := fmt.Sprintf("%s.html", tmpfile.Name())
+	err = os.Rename(tmpfile.Name(), newName)
+	if err != nil {
+		newName = tmpfile.Name()
+	}
+
+	return newName, nil
+
+}
+
 func main() {
 
 	var oBenchNames, oBenchArgs stringList
@@ -44,6 +80,7 @@ func main() {
 	flag.Var(&oBenchArgs, "oba", "comma-separated list of benchmark arguments")
 	title := flag.String("title", "Graph: Benchmark results in ns/op", "title of a graph")
 	apiUrl := flag.String("apiurl", "http://benchgraph.codingberg.com", "url to server api")
+	islocal := flag.Bool("local", false, "generates the response locally")
 	flag.Parse()
 
 	var skipBenchNamesParsing, skipBenchArgsParsing bool
@@ -109,11 +146,18 @@ func main() {
 	}
 
 	fmt.Println()
-	fmt.Println("Waiting for server response ...")
 
 	data := graphData(benchResults, oBenchNames, oBenchArgs)
 
-	graphUrl, err := uploadData(*apiUrl, string(data), *title)
+	var graphUrl string
+	var err error
+	if !*islocal {
+		fmt.Println("Waiting for server response ...")
+		graphUrl, err = uploadData(*apiUrl, string(data), *title)
+	} else {
+		graphUrl, err = writeLocallyData(string(data), *title)
+	}
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "uploading data: %v", err)
 		os.Exit(1)
