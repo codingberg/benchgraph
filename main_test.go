@@ -15,6 +15,7 @@ var bTests = []struct {
 	{"BenchmarkF2_F0000000-4		50000000	        29.4 ns/op", "F2", "F0000000", 29.4},
 	{"BenchmarkF0_FF-2		10000000	        37.4 ns/op", "F0", "FF", 37.4},
 	{"BenchmarkF_0-2		40000000	        11.2 ns/op", "F", "0", 11.2},
+	{"BenchmarkF3/quicksort_100-4		40000000	        11.2 ns/op", "F3/quicksort", "100", 11.2},
 }
 
 func TestParser(t *testing.T) {
